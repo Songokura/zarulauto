@@ -57,9 +57,8 @@
 
   /* ---------- ссылки WhatsApp с текстом ---------- */
   var WA = {
-    main: 'Здравствуйте. Хочу записаться на курс категории B на автомате в ZARUL AUTO. Подскажите, пожалуйста, расписание ближайших групп.',
-    pack: 'Здравствуйте. Интересует пакет «{pack}» (курс категории B на автомате, Алматы). Подскажите расписание ближайших групп и условия рассрочки.',
-    branch: 'Здравствуйте. Хочу записаться на курс категории B в филиале {branch}. Подскажите расписание ближайших групп.',
+    main: 'Здравствуйте. Хочу записаться на курс категории B на автомате в ZARUL AUTO в Талдыкоргане. Подскажите, пожалуйста, расписание ближайших групп.',
+    pack: 'Здравствуйте. Интересует пакет «{pack}» (курс категории B на автомате, Талдыкорган). Подскажите расписание ближайших групп и условия рассрочки.',
     'tdk-lesson': 'Здравствуйте. Хочу записаться на индивидуальный урок вождения на автодроме в Талдыкоргане.',
     'tdk-trial': 'Здравствуйте. Хочу записаться на пробный заезд перед экзаменом в Талдыкоргане.'
   };
@@ -82,10 +81,9 @@
       (!name ? form.name : form.phone).focus();
       return;
     }
-    var t = 'Здравствуйте. Заявка с сайта zarulauto.kz. Имя: ' + name + '. Телефон: ' + phone +
-      '. Филиал: ' + form.branch.value + '. Пакет: ' + form.pack.value + '.';
-    var num = form.branch.value === 'Талдыкорган' ? '77773423336' : '77773423338';
-    w.open('https://wa.me/' + num + '?text=' + encodeURIComponent(t), '_blank', 'noopener');
+    var t = 'Здравствуйте. Заявка с сайта zarulauto.kz (Талдыкорган). Имя: ' + name + '. Телефон: ' + phone +
+      '. Интересует: ' + form.what.value + '. Пакет: ' + form.pack.value + '.';
+    w.open('https://wa.me/77773423336?text=' + encodeURIComponent(t), '_blank', 'noopener');
   });
 
   /* ---------- проявление блоков и боксов ---------- */
@@ -107,16 +105,17 @@
   var labels = Array.prototype.slice.call(d.querySelectorAll('#labels .lbl'));
   var L = route.getTotalLength();
   routeDone.setAttribute('d', route.getAttribute('d'));
-  routeDone.style.strokeDasharray = L + ' ' + L;
-  routeDone.style.strokeDashoffset = L;
+  var TAIL = 520; /* след за машиной */
+  routeDone.style.strokeDasharray = TAIL + ' ' + (L + TAIL);
+  routeDone.style.strokeDashoffset = TAIL;
 
   function setSceneViewBox() {
     var portrait = w.innerWidth / w.innerHeight < 0.9 || w.innerWidth <= 720;
     if (portrait) {
-      scene.setAttribute('viewBox', '580 60 1020 880');
+      scene.setAttribute('viewBox', '-10 -10 1190 1100');
       scene.setAttribute('preserveAspectRatio', 'xMidYMin meet');
     } else {
-      scene.setAttribute('viewBox', '560 0 1040 1000');
+      scene.setAttribute('viewBox', '-30 -20 1230 1120');
       scene.setAttribute('preserveAspectRatio', 'xMaxYMid meet');
     }
   }
@@ -150,20 +149,20 @@
 
   var lastP = -1, curP = 0;
   function drive(p) {
-    p = Math.max(0, Math.min(1, p));
+    p = ((p % 1) + 1) % 1;
     curP = p;
     if (Math.abs(p - lastP) < 0.0005) return;
     lastP = p;
     var len = L * p;
-    var a = route.getPointAtLength(Math.max(0, len - 6));
-    var b = route.getPointAtLength(Math.min(L, len + 6));
+    var a = route.getPointAtLength((len - 6 + L) % L);
+    var b = route.getPointAtLength((len + 6) % L);
     var pt = route.getPointAtLength(len);
     var ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
     car.setAttribute('transform', 'translate(' + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')');
-    routeDone.style.strokeDashoffset = L - len;
+    routeDone.style.strokeDashoffset = TAIL - len;
     labels.forEach(function (lb) {
-      lb.classList.toggle('on', len >= lb._at - 60);
-      lb.classList.toggle('now', len >= lb._at - 60 && len < lb._at + 160);
+      lb.classList.add('on');
+      lb.classList.toggle('now', len >= lb._at - 140 && len < lb._at + 160);
     });
   }
   drive(0);
@@ -180,48 +179,24 @@
   }
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(heroIntro); else heroIntro();
 
-  /* телефон: машина ездит по маршруту в цикле; компьютер: проезд по прокрутке */
-  var mobileHero = w.matchMedia('(max-width: 720px)');
-  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 16000;
+  /* машина ездит по маршруту автодрома в цикле, на всех экранах */
+  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 30000, loopOff = 0;
   function loopTick(t) {
-    if (!loopT0) loopT0 = t;
+    if (!loopT0) loopT0 = t - loopOff * LOOP_MS;
     drive(((t - loopT0) % LOOP_MS) / LOOP_MS);
     loopRaf = requestAnimationFrame(loopTick);
   }
-  function loopStart() { if (!loopRaf && !reduce) { loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
+  function loopStart() { if (!loopRaf && !reduce) { loopOff = curP; loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
   function loopStop() { if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; } }
-  var heroST = null;
-  function setupHeroMode() {
-    if (mobileHero.matches) {
-      if (heroST) { heroST.kill(); heroST = null; }
-      if (reduce) drive(1); else if (heroVisible) loopStart();
-    } else {
-      loopStop();
-      if (G && ST && !heroST) {
-        heroST = ST.create({
-          trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.6,
-          onUpdate: function (self) { drive(self.progress); }
-        });
-      }
-    }
-  }
-  if (G && ST || mobileHero.matches) {
-    setupHeroMode();
-  } else {
-    w.addEventListener('scroll', function () {
-      if (mobileHero.matches) return;
-      var r = hero.getBoundingClientRect();
-      var total = r.height - w.innerHeight;
-      drive(total > 0 ? (-r.top) / total : 0);
-    }, { passive: true });
-  }
+  function setupHeroMode() { if (reduce) drive(0.02); else if (heroVisible) loopStart(); }
+  setupHeroMode();
 
   /* пауза анимаций сцены вне экрана */
   var heroIO = new IntersectionObserver(function (es) {
     es.forEach(function (en) {
       heroVisible = en.isIntersecting;
       scene.style.visibility = heroVisible ? '' : 'hidden';
-      if (mobileHero.matches) { heroVisible ? loopStart() : loopStop(); }
+      heroVisible ? loopStart() : loopStop();
     });
   });
   heroIO.observe(hero);
@@ -232,26 +207,44 @@
   }, { threshold: 0.25 });
   d.querySelectorAll('.plate').forEach(function (pl) { plateIO.observe(pl); });
 
-  /* ---------- филиалы: карточка -> карта ---------- */
-  var brMap = d.getElementById('brMap'), brCap = d.getElementById('brCap');
-  var brCards = Array.prototype.slice.call(d.querySelectorAll('.bcard[data-map]'));
-  function showBranch(c, scroll) {
-    brCards.forEach(function (o) {
-      var on = o === c;
-      o.classList.toggle('on', on);
-      var b = o.querySelector('.br-show'); if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  /* ---------- видео: немая петля в кадре, полный ролик по клику ---------- */
+  var vthumbs = Array.prototype.slice.call(d.querySelectorAll('.vthumb'));
+  var vIO = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      var v = en.target.querySelector('video');
+      if (en.isIntersecting && !reduce) {
+        if (!v.getAttribute('src')) v.setAttribute('src', v.dataset.loop);
+        var p = v.play(); if (p && p.catch) p.catch(function () { });
+      } else if (v.getAttribute('src')) { v.pause(); }
     });
-    if (brMap.getAttribute('src') !== c.dataset.map) brMap.setAttribute('src', c.dataset.map);
-    brMap.title = 'Карта: филиал ' + c.dataset.pin;
-    brCap.textContent = c.dataset.pin + ' - ' + c.querySelector('.addr').textContent;
-    if (scroll && w.matchMedia('(max-width: 960px)').matches) {
-      scrollToY(brMap.getBoundingClientRect().top + (w.scrollY || 0) - hdr.offsetHeight - 16);
-    }
-  }
-  brCards.forEach(function (c) {
-    c.querySelector('.br-show').addEventListener('click', function () { showBranch(c, true); });
-    c.querySelector('h3').addEventListener('click', function () { showBranch(c, false); });
+  }, { threshold: 0.55 });
+  vthumbs.forEach(function (b) {
+    var v = b.querySelector('video');
+    v.addEventListener('playing', function () { b.classList.add('is-live'); });
+    vIO.observe(b);
+    b.addEventListener('click', function () { openVideo(b.dataset.video, b); });
   });
+  var vmodal = d.getElementById('vmodal'), vplayer = d.getElementById('vplayer'), vFrom = null;
+  function openVideo(src, from) {
+    vFrom = from;
+    vplayer.setAttribute('src', src);
+    vmodal.classList.add('open');
+    d.body.classList.add('v-open');
+    if (lenis) lenis.stop();
+    var p = vplayer.play(); if (p && p.catch) p.catch(function () { });
+    vmodal.querySelector('.vmodal-x').focus();
+  }
+  function closeVideo() {
+    if (!vmodal.classList.contains('open')) return;
+    vplayer.pause(); vplayer.removeAttribute('src'); vplayer.load();
+    vmodal.classList.remove('open');
+    d.body.classList.remove('v-open');
+    if (lenis) lenis.start();
+    if (vFrom) vFrom.focus();
+  }
+  vmodal.querySelector('.vmodal-x').addEventListener('click', closeVideo);
+  vmodal.addEventListener('click', function (e) { if (e.target === vmodal) closeVideo(); });
+  d.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeVideo(); });
 
   /* ---------- лента выпускников ---------- */
   var track = d.getElementById('grads');
