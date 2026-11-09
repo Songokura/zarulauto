@@ -180,14 +180,36 @@
   }
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(heroIntro); else heroIntro();
 
-  /* прокрутка героя -> проезд */
-  if (G && ST) {
-    ST.create({
-      trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.6,
-      onUpdate: function (self) { drive(self.progress); }
-    });
+  /* телефон: машина ездит по маршруту в цикле; компьютер: проезд по прокрутке */
+  var mobileHero = w.matchMedia('(max-width: 720px)');
+  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 16000;
+  function loopTick(t) {
+    if (!loopT0) loopT0 = t;
+    drive(((t - loopT0) % LOOP_MS) / LOOP_MS);
+    loopRaf = requestAnimationFrame(loopTick);
+  }
+  function loopStart() { if (!loopRaf && !reduce) { loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
+  function loopStop() { if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; } }
+  var heroST = null;
+  function setupHeroMode() {
+    if (mobileHero.matches) {
+      if (heroST) { heroST.kill(); heroST = null; }
+      if (reduce) drive(1); else if (heroVisible) loopStart();
+    } else {
+      loopStop();
+      if (G && ST && !heroST) {
+        heroST = ST.create({
+          trigger: hero, start: 'top top', end: 'bottom bottom', scrub: 0.6,
+          onUpdate: function (self) { drive(self.progress); }
+        });
+      }
+    }
+  }
+  if (G && ST || mobileHero.matches) {
+    setupHeroMode();
   } else {
     w.addEventListener('scroll', function () {
+      if (mobileHero.matches) return;
       var r = hero.getBoundingClientRect();
       var total = r.height - w.innerHeight;
       drive(total > 0 ? (-r.top) / total : 0);
@@ -196,7 +218,11 @@
 
   /* пауза анимаций сцены вне экрана */
   var heroIO = new IntersectionObserver(function (es) {
-    es.forEach(function (en) { scene.style.visibility = en.isIntersecting ? '' : 'hidden'; });
+    es.forEach(function (en) {
+      heroVisible = en.isIntersecting;
+      scene.style.visibility = heroVisible ? '' : 'hidden';
+      if (mobileHero.matches) { heroVisible ? loopStart() : loopStop(); }
+    });
   });
   heroIO.observe(hero);
 
@@ -212,16 +238,11 @@
       });
       if (!next) return;
       /* уход текущей плиты, когда наезжает следующая */
-      G.fromTo(plate, { scale: 1, '--dim': 0 }, {
-        scale: 0.94, '--dim': 0.55, ease: 'none',
-        scrollTrigger: { trigger: next, start: 'top bottom', end: 'top top', scrub: true }
-      });
-      /* входящая плита - скруглённые углы, которые распрямляются */
-      var np = next.querySelector('.plate');
-      G.fromTo(np, { borderRadius: '28px 28px 0 0' }, {
-        borderRadius: '0px 0px 0 0', ease: 'none',
-        scrollTrigger: { trigger: next, start: 'top 30%', end: 'top top', scrub: true }
-      });
+      /* затемнение - отдельным слоем (opacity), без пересчёта стилей всей плиты */
+      var dim = d.createElement('i'); dim.className = 'plate-dim'; plate.appendChild(dim);
+      var stUse = { trigger: next, start: 'top bottom', end: 'top top', scrub: true };
+      G.fromTo(plate, { scale: 1 }, { scale: 0.94, ease: 'none', force3D: true, scrollTrigger: stUse });
+      G.fromTo(dim, { opacity: 0 }, { opacity: 0.55, ease: 'none', scrollTrigger: { trigger: next, start: 'top bottom', end: 'top top', scrub: true } });
     });
   } else {
     pws.forEach(function (pw) { pw.querySelector('.plate').classList.add('on'); });
@@ -305,6 +326,7 @@
     if (w.innerWidth === lastW) return;
     lastW = w.innerWidth;
     setSceneViewBox();
+    setupHeroMode();
     lastP = -1; drive(curP);
     if (ST) ST.refresh();
   });
