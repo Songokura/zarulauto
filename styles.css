@@ -607,3 +607,5 @@ body.menu-open .burger span:last-child{transform:rotate(-45deg)}
 .tticks{margin-top:2px}
 .tticks li{color:var(--ink);font-size:15.5px}
 .sec-edu .box{--c:var(--ink)}
+/* правки 09.11.2026 (3): сцена на компьютере начинается под шапкой */
+@media (min-width:721px){.scene{top:calc(var(--hdr) + 10px);bottom:14px}}
