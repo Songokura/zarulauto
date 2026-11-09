@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zarulauto.kz/sitemap.xml
