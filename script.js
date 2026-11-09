@@ -226,62 +226,32 @@
   });
   heroIO.observe(hero);
 
-  /* ---------- плиты обучения ---------- */
-  var pws = Array.prototype.slice.call(d.querySelectorAll('.pw'));
-  if (G && ST && !reduce) {
-    pws.forEach(function (pw, i) {
-      var plate = pw.querySelector('.plate');
-      var next = pws[i + 1];
-      ST.create({
-        trigger: pw, start: 'top 60%', end: 'bottom bottom',
-        onToggle: function (self) { plate.classList.toggle('on', self.isActive); }
-      });
-      if (!next) return;
-      /* уход текущей плиты, когда наезжает следующая */
-      /* затемнение - отдельным слоем (opacity), без пересчёта стилей всей плиты */
-      var dim = d.createElement('i'); dim.className = 'plate-dim'; plate.appendChild(dim);
-      var stUse = { trigger: next, start: 'top bottom', end: 'top top', scrub: true };
-      G.fromTo(plate, { scale: 1 }, { scale: 0.94, ease: 'none', force3D: true, scrollTrigger: stUse });
-      G.fromTo(dim, { opacity: 0 }, { opacity: 0.55, ease: 'none', scrollTrigger: { trigger: next, start: 'top bottom', end: 'top top', scrub: true } });
-    });
-  } else {
-    pws.forEach(function (pw) { pw.querySelector('.plate').classList.add('on'); });
-  }
+  /* ---------- плиты обучения: обычные блоки, проявление при появлении ---------- */
+  var plateIO = new IntersectionObserver(function (es) {
+    es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('on'); plateIO.unobserve(en.target); } });
+  }, { threshold: 0.25 });
+  d.querySelectorAll('.plate').forEach(function (pl) { plateIO.observe(pl); });
 
-  /* ---------- филиалы: карточка <-> точка на схеме ---------- */
-  var pins = {};
-  d.querySelectorAll('.map [data-pin]').forEach(function (g) { pins[g.dataset.pin] = g; });
-  d.querySelectorAll('.bcard[data-pin]').forEach(function (c) {
-    var g = pins[c.dataset.pin];
-    if (!g) return;
-    function hot(on) { g.classList.toggle('hot', on); }
-    c.addEventListener('mouseenter', function () { hot(true); });
-    c.addEventListener('mouseleave', function () { hot(false); });
-    c.addEventListener('focusin', function () { hot(true); });
-    c.addEventListener('focusout', function () { hot(false); });
-    g.style.cursor = 'pointer';
-    g.addEventListener('click', function () {
-      var y = c.getBoundingClientRect().top + (w.scrollY || 0) - 100;
-      scrollToY(y);
-      c.classList.add('hot');
-      setTimeout(function () { c.classList.remove('hot'); }, 1400);
+  /* ---------- филиалы: карточка -> карта ---------- */
+  var brMap = d.getElementById('brMap'), brCap = d.getElementById('brCap');
+  var brCards = Array.prototype.slice.call(d.querySelectorAll('.bcard[data-map]'));
+  function showBranch(c, scroll) {
+    brCards.forEach(function (o) {
+      var on = o === c;
+      o.classList.toggle('on', on);
+      var b = o.querySelector('.br-show'); if (b) b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
+    if (brMap.getAttribute('src') !== c.dataset.map) brMap.setAttribute('src', c.dataset.map);
+    brMap.title = 'Карта: филиал ' + c.dataset.pin;
+    brCap.textContent = c.dataset.pin + ' - ' + c.querySelector('.addr').textContent;
+    if (scroll && w.matchMedia('(max-width: 960px)').matches) {
+      scrollToY(brMap.getBoundingClientRect().top + (w.scrollY || 0) - hdr.offsetHeight - 16);
+    }
+  }
+  brCards.forEach(function (c) {
+    c.querySelector('.br-show').addEventListener('click', function () { showBranch(c, true); });
+    c.querySelector('h3').addEventListener('click', function () { showBranch(c, false); });
   });
-  /* стартовая подсветка точек по очереди при появлении схемы */
-  var mapWrap = d.querySelector('.map-wrap');
-  var mapIO = new IntersectionObserver(function (es) {
-    if (!es[0].isIntersecting) return;
-    mapIO.disconnect();
-    var order = ['Сайран', 'Абая', 'Желтоксан', 'Саяхат', 'Талдыкорган'];
-    order.forEach(function (k, i) {
-      setTimeout(function () {
-        var g = pins[k]; if (!g) return;
-        g.classList.add('hot');
-        setTimeout(function () { g.classList.remove('hot'); }, 700);
-      }, 900 + i * 260);
-    });
-  }, { threshold: 0.4 });
-  mapIO.observe(mapWrap);
 
   /* ---------- лента выпускников ---------- */
   var track = d.getElementById('grads');

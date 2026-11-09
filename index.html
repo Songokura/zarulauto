@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&family=Golos+Text:wght@400;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261109-6">
+<link rel="stylesheet" href="styles.css?v=20261109-7">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -262,73 +262,40 @@
       <p class="lead">У каждого филиала свои группы и расписание. Теорию можно подобрать по району и времени, вождение согласовывается отдельно с инструктором.</p>
     </div>
 
-    <div class="map-wrap rv">
-      <svg class="map" viewBox="0 0 1200 520" aria-hidden="true">
-        <defs>
-          <pattern id="pMapGrid" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0H0V60" fill="none" stroke="#0B0B0B" stroke-opacity=".08"/></pattern>
-          <linearGradient id="gMtn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B0B0B" stop-opacity="0"/><stop offset="1" stop-color="#0B0B0B" stop-opacity=".12"/></linearGradient>
-        </defs>
-        <rect x="0" y="0" width="1200" height="520" fill="url(#pMapGrid)"/>
-        <!-- проспекты Алматы: сетка -->
-        <g stroke="#0B0B0B" stroke-opacity=".5" stroke-width="2" fill="none" class="draw-l">
-          <line x1="120" y1="120" x2="900" y2="120"/><line x1="120" y1="220" x2="900" y2="220"/><line x1="120" y1="320" x2="900" y2="320"/><line x1="120" y1="420" x2="900" y2="420"/>
-          <line x1="220" y1="60" x2="220" y2="470"/><line x1="380" y1="60" x2="380" y2="470"/><line x1="540" y1="60" x2="540" y2="470"/><line x1="700" y1="60" x2="700" y2="470"/><line x1="840" y1="60" x2="840" y2="470"/>
-        </g>
-        <g stroke="#0B0B0B" stroke-opacity=".25" stroke-width="1" stroke-dasharray="4 8" fill="none">
-          <line x1="120" y1="170" x2="900" y2="170"/><line x1="120" y1="270" x2="900" y2="270"/><line x1="120" y1="370" x2="900" y2="370"/>
-          <line x1="300" y1="60" x2="300" y2="470"/><line x1="460" y1="60" x2="460" y2="470"/><line x1="620" y1="60" x2="620" y2="470"/><line x1="770" y1="60" x2="770" y2="470"/>
-        </g>
-        <!-- горы на юге -->
-        <rect x="0" y="440" width="1200" height="80" fill="url(#gMtn)"/>
-        <path d="M60 500 L140 462 L200 490 L280 448 L350 486 L430 452 L500 484 L580 446 L650 480 L730 450 L800 486 L880 456 L940 490 L1010 462 L1080 494 L1140 470 L1200 500" fill="none" stroke="#0B0B0B" stroke-opacity=".6" stroke-width="2" class="draw-l"/>
-        <!-- дорога в Талдыкорган -->
-        <path d="M900 120 C980 120 1000 90 1040 86" fill="none" stroke="#0B0B0B" stroke-opacity=".5" stroke-width="2" stroke-dasharray="10 8"/>
-        <!-- Талдыкорган: врезка -->
-        <g class="map-tdk" data-pin="Талдыкорган">
-          <rect x="1040" y="40" width="130" height="92" rx="10" fill="#fff" stroke="#0B0B0B" stroke-width="2"/>
-          <path d="M1062 66h86v40h-86z" fill="none" stroke="#0B0B0B" stroke-width="1.5"/>
-          <path d="M1070 76c8 0 8 20 16 20s8-20 16-20 8 20 16 20 8-20 16-20" fill="none" stroke="#0B0B0B" stroke-width="1.5"/>
-          <rect x="1138" y="60" width="4" height="12" fill="#FBE108"/><rect x="1062" y="60" width="4" height="12" fill="#FBE108"/>
-          <text x="1170" y="162" class="map-t" text-anchor="end">Талдыкорган</text>
-        </g>
-        <!-- точки филиалов -->
-        <g class="pin" data-pin="Сайран"><circle cx="220" cy="320" r="26" class="pin-ring"/><circle cx="220" cy="320" r="9"/><rect x="218" y="292" width="4" height="18" fill="#FBE108"/><text x="220" y="362" class="map-t" text-anchor="middle">Сайран</text></g>
-        <g class="pin" data-pin="Абая"><circle cx="540" cy="320" r="26" class="pin-ring"/><circle cx="540" cy="320" r="9"/><rect x="538" y="292" width="4" height="18" fill="#FBE108"/><text x="540" y="362" class="map-t" text-anchor="middle">Абая</text></g>
-        <g class="pin" data-pin="Желтоксан"><circle cx="620" cy="220" r="26" class="pin-ring"/><circle cx="620" cy="220" r="9"/><rect x="618" y="192" width="4" height="18" fill="#FBE108"/><text x="620" y="262" class="map-t" text-anchor="middle">Желтоксан</text></g>
-        <g class="pin" data-pin="Саяхат"><circle cx="700" cy="120" r="26" class="pin-ring"/><circle cx="700" cy="120" r="9"/><rect x="698" y="92" width="4" height="18" fill="#FBE108"/><text x="700" y="162" class="map-t" text-anchor="middle">Саяхат</text></g>
-      </svg>
-      <p class="map-note">Схема расположения филиалов. Точные адреса - в карточках и в 2ГИС.</p>
-    </div>
-
+    <div class="br-layout">
     <div class="branches">
-      <article class="bcard box-c rv" data-pin="Сайран" id="filial-sayran">
+      <article class="bcard box-c rv on" data-pin="Сайран" data-map="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A3%D1%82%D0%B5%D0%B3%D0%B5%D0%BD%20%D0%B1%D0%B0%D1%82%D1%8B%D1%80%D0%B0%2C%2011%D0%B0&z=16&hl=ru&output=embed" id="filial-sayran">
         <h3 class="h3">Сайран</h3>
         <p class="addr">ул. Утеген батыра, 11а, 3-й этаж, кабинет 332</p>
         <div class="bcard-act">
+          <button class="lnk br-show" type="button" aria-pressed="true"><svg class="i"><use href="#ic-pin"/></svg>Показать на карте</button>
           <a class="lnk" href="https://go.2gis.com/3wke2j" target="_blank" rel="noopener"><svg class="i"><use href="#ic-pin"/></svg>Открыть в 2ГИС</a>
           <a class="btn btn-dark btn-sm" href="https://wa.me/77773423338" data-wa="branch" data-branch="Сайран"><svg class="i"><use href="#ic-wa"/></svg>WhatsApp</a>
         </div>
       </article>
-      <article class="bcard box-c rv" data-pin="Абая" id="filial-abaya">
+      <article class="bcard box-c rv" data-pin="Абая" data-map="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82%20%D0%90%D0%B1%D0%B0%D1%8F%2C%2076&z=16&hl=ru&output=embed" id="filial-abaya">
         <h3 class="h3">Абая</h3>
         <p class="addr">пр. Абая, 76, 4-й этаж, кабинет 404</p>
         <div class="bcard-act">
+          <button class="lnk br-show" type="button" aria-pressed="false"><svg class="i"><use href="#ic-pin"/></svg>Показать на карте</button>
           <a class="lnk" href="https://go.2gis.com/ladey" target="_blank" rel="noopener"><svg class="i"><use href="#ic-pin"/></svg>Открыть в 2ГИС</a>
           <a class="btn btn-dark btn-sm" href="https://wa.me/77773423338" data-wa="branch" data-branch="Абая"><svg class="i"><use href="#ic-wa"/></svg>WhatsApp</a>
         </div>
       </article>
-      <article class="bcard box-c rv" data-pin="Желтоксан" id="filial-zheltoksan">
+      <article class="bcard box-c rv" data-pin="Желтоксан" data-map="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%96%D0%B5%D0%BB%D1%82%D0%BE%D0%BA%D1%81%D0%B0%D0%BD%2C%20118&z=16&hl=ru&output=embed" id="filial-zheltoksan">
         <h3 class="h3">Желтоксан</h3>
         <p class="addr">ул. Желтоксан, 118</p>
         <div class="bcard-act">
+          <button class="lnk br-show" type="button" aria-pressed="false"><svg class="i"><use href="#ic-pin"/></svg>Показать на карте</button>
           <a class="lnk" href="https://go.2gis.com/kha3b" target="_blank" rel="noopener"><svg class="i"><use href="#ic-pin"/></svg>Открыть в 2ГИС</a>
           <a class="btn btn-dark btn-sm" href="https://wa.me/77773423338" data-wa="branch" data-branch="Желтоксан"><svg class="i"><use href="#ic-wa"/></svg>WhatsApp</a>
         </div>
       </article>
-      <article class="bcard box-c rv" data-pin="Саяхат" id="filial-sayahat">
+      <article class="bcard box-c rv" data-pin="Саяхат" data-map="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%9F%D1%83%D1%88%D0%BA%D0%B8%D0%BD%D0%B0%2C%202&z=16&hl=ru&output=embed" id="filial-sayahat">
         <h3 class="h3">Саяхат</h3>
         <p class="addr">ул. Пушкина, 2, БЦ SAYAHAT</p>
         <div class="bcard-act">
+          <button class="lnk br-show" type="button" aria-pressed="false"><svg class="i"><use href="#ic-pin"/></svg>Показать на карте</button>
           <a class="lnk" href="https://go.2gis.com/6t8rm" target="_blank" rel="noopener"><svg class="i"><use href="#ic-pin"/></svg>Открыть в 2ГИС</a>
           <a class="btn btn-dark btn-sm" href="https://wa.me/77773423338" data-wa="branch" data-branch="Саяхат"><svg class="i"><use href="#ic-wa"/></svg>WhatsApp</a>
         </div>
@@ -342,6 +309,11 @@
           <a class="lnk" href="https://www.instagram.com/zarulauto.tdk/" target="_blank" rel="noopener"><svg class="i"><use href="#ic-ig"/></svg>@zarulauto.tdk</a>
         </div>
       </article>
+    </div>
+    <div class="br-map box-c rv">
+      <iframe id="brMap" title="Карта: филиал Сайран" src="https://maps.google.com/maps?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%A3%D1%82%D0%B5%D0%B3%D0%B5%D0%BD%20%D0%B1%D0%B0%D1%82%D1%8B%D1%80%D0%B0%2C%2011%D0%B0&z=16&hl=ru&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <p class="br-cap" id="brCap">Сайран - ул. Утеген батыра, 11а, 3-й этаж, кабинет 332</p>
+    </div>
     </div>
 
     <p class="pads rv"><span class="pads-k">Учебные площадки в Алматы:</span> автодром - ул. Жансугурова, 176А; специализированная площадка - ул. И. Жансугурова, 118; автодром - ул. Желтоксан, 2/1.</p>
@@ -532,8 +504,8 @@
       <figure class="box box-c"><img class="box-img" src="assets/photos/trust-147.webp" alt="Выпускница ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
       <figure class="box box-c"><img class="box-img" src="assets/photos/trust-148.webp" alt="Выпускник ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
       <figure class="box box-c"><img class="box-img" src="assets/photos/trust-149.webp" alt="Выпускница ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
-      <figure class="box box-c"><img class="box-img" src="assets/photos/trust-150.webp" alt="Выпускник ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
-      <figure class="box box-c"><img class="box-img" src="assets/photos/trust-151.webp" alt="Выпускница ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
+      <figure class="box box-c"><img class="box-img" src="assets/photos/trust-150.webp" alt="Выпускница ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
+      <figure class="box box-c"><img class="box-img" src="assets/photos/trust-151.webp" alt="Выпускник ZARUL AUTO с водительским удостоверением" width="720" height="905" loading="lazy"></figure>
     </div>
     <div class="wrap grads-more">
       <a class="btn btn-line" href="https://www.instagram.com/zarulauto.kz/" target="_blank" rel="noopener"><svg class="i"><use href="#ic-ig"/></svg>Больше выпускников в Instagram</a>
@@ -566,10 +538,10 @@
   <div class="wrap exam-in">
     <div class="exam-media rv">
       <figure class="box box-c box-ex1">
-        <img class="box-img" src="assets/photos/exam-85.webp" alt="Выпускница ZARUL AUTO с документами в СпецЦОНе" width="720" height="700" loading="lazy">
+        <img class="box-img" src="assets/photos/exam-85.webp" alt="Документы в руках в зале СпецЦОНа" width="720" height="700" loading="lazy">
       </figure>
       <figure class="box box-c box-ex2">
-        <img class="box-img" src="assets/photos/exam-143.webp" alt="Экзамен по теории в СпецЦОНе" width="720" height="830" loading="lazy">
+        <img class="box-img" src="assets/photos/exam-143.webp" alt="Зал экзамена в СпецЦОНе" width="720" height="830" loading="lazy">
         <figcaption>Экзамен в СпецЦОНе</figcaption>
       </figure>
     </div>
@@ -601,7 +573,7 @@
         <ul class="ticks tticks">
           <li>Пакеты «Базовый», «Комфорт» и PRO</li>
           <li>Вождение на собственном автодроме школы</li>
-          <li>Рассрочка Kaspi</li>
+          <li>Рассрочка 0-0-12</li>
         </ul>
         <a class="btn btn-dark" href="https://wa.me/77773423336" data-wa="branch" data-branch="Талдыкорган"><svg class="i"><use href="#ic-wa"/></svg>Узнать условия в Талдыкоргане</a>
       </article>
@@ -742,6 +714,6 @@
 <script src="assets/vendor/gsap.min.js" defer></script>
 <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
 <script src="assets/vendor/lenis.min.js" defer></script>
-<script src="script.js?v=20261109-6" defer></script>
+<script src="script.js?v=20261109-7" defer></script>
 </body>
 </html>
