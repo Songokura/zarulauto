@@ -591,3 +591,19 @@ body.menu-open .burger span:last-child{transform:rotate(-45deg)}
 .tcard-img{margin:0 -28px 6px;border-radius:6px 6px 0 0;overflow:hidden;aspect-ratio:4/3;background:#ddd}
 .tcard-img img{width:100%;height:100%;object-fit:cover;display:block}
 .sec-tdk .tdk-contacts .lnk{color:#fff}
+
+/* правки 09.11.2026 (2): плиты обучения светлые, результаты снова тёмные */
+.sec-edu .plate{color:var(--ink)}
+.sec-edu .plate-1,.sec-edu .plate-3{background:#fff}
+.sec-edu .plate-2{background:var(--paper)}
+.sec-edu .plate-txt p{color:var(--ink-2)}
+.sec-edu .ticks li{color:var(--ink)}
+.sec-edu .box{color:var(--ink)}
+.sec-edu .plate-city g,.sec-edu .plate-sketch g[stroke]{stroke:var(--ink)}
+.sec-edu .plate-sketch g[fill="#fff"]{fill:var(--ink)}
+.sec-edu .plate-dim{background:#0B0B0B}
+.pw+.pw .plate{box-shadow:0 -1px 0 rgba(11,11,11,.08)}
+/* карточки Талдыкоргана: пункты на белом */
+.tticks{margin-top:2px}
+.tticks li{color:var(--ink);font-size:15.5px}
+.sec-edu .box{--c:var(--ink)}
