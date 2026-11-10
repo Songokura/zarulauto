@@ -201,12 +201,25 @@
 
   /* машина ездит по маршруту автодрома в цикле, на всех экранах */
   var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 62000, loopOff = 0;
+  /* остановка перед пешеходным переходом: плавное торможение, пауза, разгон */
+  var STOP_AT = 232, STOP_A = 70, STOP_MS = 1300;
+  var V = L / LOOP_MS, ACC = V * V / (2 * STOP_A), TA = (STOP_AT - STOP_A) / V, TB = 2 * STOP_A / V;
+  var CYCLE = LOOP_MS + TB + STOP_MS;
+  function lenAt(e) {
+    if (e < TA) return V * e;
+    if (e < TA + TB) { var u = e - TA; return STOP_AT - STOP_A + V * u - ACC * u * u / 2; }
+    if (e < TA + TB + STOP_MS) return STOP_AT;
+    if (e < TA + 2 * TB + STOP_MS) { var k = e - TA - TB - STOP_MS; return STOP_AT + ACC * k * k / 2; }
+    return V * (e - TB - STOP_MS);
+  }
+  var loopE = 0;
   function loopTick(t) {
-    if (!loopT0) loopT0 = t - loopOff * LOOP_MS;
-    drive(((t - loopT0) % LOOP_MS) / LOOP_MS);
+    if (!loopT0) loopT0 = t - loopE;
+    loopE = (t - loopT0) % CYCLE;
+    drive(lenAt(loopE) / L);
     loopRaf = requestAnimationFrame(loopTick);
   }
-  function loopStart() { if (!loopRaf && !reduce) { loopOff = curP; loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
+  function loopStart() { if (!loopRaf && !reduce) { loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
   function loopStop() { if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; } }
   function setupHeroMode() { if (reduce) drive(0.02); else if (heroVisible) loopStart(); }
   setupHeroMode();
