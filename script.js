@@ -158,8 +158,10 @@
     scene.removeChild(tmp);
     return v;
   }
-  var REV_A = prefixLen('L291 190'), REV_B = prefixLen('L205 284');
-  if (REV_A < 0 || REV_B < 0) { REV_A = REV_B = -1; }
+  /* участки заднего хода: тупик (упор -> левый карман) и параллельная парковка */
+  var REVS = [['L291 190', 'L205 284'], ['L330 668', 'C260 668 250 765 180 765']].map(function (m) {
+    return [prefixLen(m[0]), prefixLen(m[1])];
+  }).filter(function (z) { return z[0] >= 0 && z[1] > z[0]; });
 
   var lastP = -1, curP = 0;
   function drive(p) {
@@ -169,10 +171,12 @@
     lastP = p;
     var len = L * p;
     /* задний ход в тупике: касательную не берём через точку смены направления */
-    var la = len - 6, lb = len + 6, back = len >= REV_A && len <= REV_B;
-    if (back) { la = Math.max(la, REV_A); lb = Math.min(lb, REV_B); }
-    else if (len < REV_A && lb > REV_A) lb = REV_A;
-    else if (len > REV_B && la < REV_B) la = REV_B;
+    var la = len - 6, lb = len + 6, back = false;
+    REVS.forEach(function (z) {
+      if (len >= z[0] && len <= z[1]) { back = true; la = Math.max(la, z[0]); lb = Math.min(lb, z[1]); }
+      else if (len < z[0] && lb > z[0]) lb = z[0];
+      else if (len > z[1] && la < z[1]) la = z[1];
+    });
     if (lb - la < 1) { la = len - 6; lb = len; }
     var a = route.getPointAtLength((la + L) % L);
     var b = route.getPointAtLength(lb % L);
@@ -200,17 +204,32 @@
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(heroIntro); else heroIntro();
 
   /* машина ездит по маршруту автодрома в цикле, на всех экранах */
-  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 62000, loopOff = 0;
-  /* остановка перед пешеходным переходом: плавное торможение, пауза, разгон */
-  var STOP_AT = 232, STOP_A = 70, STOP_MS = 1300;
-  var V = L / LOOP_MS, ACC = V * V / (2 * STOP_A), TA = (STOP_AT - STOP_A) / V, TB = 2 * STOP_A / V;
-  var CYCLE = LOOP_MS + TB + STOP_MS;
+  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 64000, loopOff = 0;
+  /* остановки: перед пешеходным переходом и в точках смены хода (тупик, парковка).
+     Плавное торможение на отрезке A, стоянка ms, разгон на том же отрезке */
+  var V = L / LOOP_MS;
+  var STOPS = [{ at: 232, A: 70, ms: 1300 }];
+  REVS.forEach(function (z) { STOPS.push({ at: z[0], A: 35, ms: 500 }, { at: z[1], A: 35, ms: 900 }); });
+  STOPS.sort(function (p, q) { return p.at - q.at; });
+  var extra = 0;
+  STOPS.forEach(function (s) {
+    s.TB = 2 * s.A / V; s.acc = V * V / (2 * s.A);
+    s.tA = (s.at - s.A) / V + extra;
+    extra += s.TB + s.ms;
+    s.tEnd = s.tA + 2 * s.TB + s.ms;
+  });
+  var CYCLE = LOOP_MS + extra;
   function lenAt(e) {
-    if (e < TA) return V * e;
-    if (e < TA + TB) { var u = e - TA; return STOP_AT - STOP_A + V * u - ACC * u * u / 2; }
-    if (e < TA + TB + STOP_MS) return STOP_AT;
-    if (e < TA + 2 * TB + STOP_MS) { var k = e - TA - TB - STOP_MS; return STOP_AT + ACC * k * k / 2; }
-    return V * (e - TB - STOP_MS);
+    var pT = 0, pL = 0;
+    for (var i = 0; i < STOPS.length; i++) {
+      var s = STOPS[i];
+      if (e < s.tA) return pL + V * (e - pT);
+      if (e < s.tA + s.TB) { var u = e - s.tA; return s.at - s.A + V * u - s.acc * u * u / 2; }
+      if (e < s.tA + s.TB + s.ms) return s.at;
+      if (e < s.tEnd) { var k = e - s.tA - s.TB - s.ms; return s.at + s.acc * k * k / 2; }
+      pT = s.tEnd; pL = s.at + s.A;
+    }
+    return pL + V * (e - pT);
   }
   var loopE = 0;
   function loopTick(t) {
