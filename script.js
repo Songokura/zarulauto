@@ -147,6 +147,20 @@
     lb._at = bl;
   });
 
+  /* участок заднего хода (разворот с тупиком): от упора до кармана */
+  function prefixLen(mark) {
+    var dd = route.getAttribute('d'), i = dd.indexOf(mark);
+    if (i < 0) return -1;
+    var tmp = d.createElementNS('http://www.w3.org/2000/svg', 'path');
+    tmp.setAttribute('d', dd.slice(0, i + mark.length));
+    scene.appendChild(tmp);
+    var v = tmp.getTotalLength();
+    scene.removeChild(tmp);
+    return v;
+  }
+  var REV_A = prefixLen('L291 190'), REV_B = prefixLen('L205 284');
+  if (REV_A < 0 || REV_B < 0) { REV_A = REV_B = -1; }
+
   var lastP = -1, curP = 0;
   function drive(p) {
     p = ((p % 1) + 1) % 1;
@@ -154,10 +168,16 @@
     if (Math.abs(p - lastP) < 0.0005) return;
     lastP = p;
     var len = L * p;
-    var a = route.getPointAtLength((len - 6 + L) % L);
-    var b = route.getPointAtLength((len + 6) % L);
+    /* задний ход в тупике: касательную не берём через точку смены направления */
+    var la = len - 6, lb = len + 6, back = len >= REV_A && len <= REV_B;
+    if (back) { la = Math.max(la, REV_A); lb = Math.min(lb, REV_B); }
+    else if (len < REV_A && lb > REV_A) lb = REV_A;
+    else if (len > REV_B && la < REV_B) la = REV_B;
+    if (lb - la < 1) { la = len - 6; lb = len; }
+    var a = route.getPointAtLength((la + L) % L);
+    var b = route.getPointAtLength(lb % L);
     var pt = route.getPointAtLength(len);
-    var ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+    var ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + (back ? 180 : 0);
     car.setAttribute('transform', 'translate(' + pt.x.toFixed(1) + ' ' + pt.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')');
     routeDone.style.strokeDashoffset = TAIL - len;
     labels.forEach(function (lb) {
@@ -180,7 +200,7 @@
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(heroIntro); else heroIntro();
 
   /* машина ездит по маршруту автодрома в цикле, на всех экранах */
-  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 57000, loopOff = 0;
+  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 62000, loopOff = 0;
   function loopTick(t) {
     if (!loopT0) loopT0 = t - loopOff * LOOP_MS;
     drive(((t - loopT0) % LOOP_MS) / LOOP_MS);
