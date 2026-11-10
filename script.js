@@ -180,7 +180,7 @@
   if (d.fonts && d.fonts.ready) d.fonts.ready.then(heroIntro); else heroIntro();
 
   /* машина ездит по маршруту автодрома в цикле, на всех экранах */
-  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 30000, loopOff = 0;
+  var heroVisible = true, loopRaf = 0, loopT0 = 0, LOOP_MS = 36000, loopOff = 0;
   function loopTick(t) {
     if (!loopT0) loopT0 = t - loopOff * LOOP_MS;
     drive(((t - loopT0) % LOOP_MS) / LOOP_MS);
