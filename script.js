@@ -167,7 +167,7 @@
   function drive(p) {
     p = ((p % 1) + 1) % 1;
     curP = p;
-    if (Math.abs(p - lastP) < 0.0005) return;
+    if (Math.abs(p - lastP) < 0.00002) return;
     lastP = p;
     var len = L * p;
     /* задний ход в тупике: касательную не берём через точку смены направления */
@@ -208,7 +208,7 @@
   /* остановки: перед пешеходным переходом и в точках смены хода (тупик, парковка).
      Плавное торможение на отрезке A, стоянка ms, разгон на том же отрезке */
   var V = L / LOOP_MS;
-  var STOPS = [{ at: 232, A: 70, ms: 1300 }];
+  var STOPS = [{ at: 215, A: 110, ms: 1200 }]; /* центр машины x=295: бампер до стоп-линии перед зеброй */
   REVS.forEach(function (z) { STOPS.push({ at: z[0], A: 35, ms: 500 }, { at: z[1], A: 35, ms: 900 }); });
   STOPS.sort(function (p, q) { return p.at - q.at; });
   var extra = 0;
@@ -238,9 +238,18 @@
     drive(lenAt(loopE) / L);
     loopRaf = requestAnimationFrame(loopTick);
   }
-  function loopStart() { if (!loopRaf && !reduce) { loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
+  function loopStart() { if (!loopRaf && !reduce && driveReady) { loopT0 = 0; loopRaf = requestAnimationFrame(loopTick); } }
   function loopStop() { if (loopRaf) { cancelAnimationFrame(loopRaf); loopRaf = 0; } }
   function setupHeroMode() { if (reduce) drive(0.02); else if (heroVisible) loopStart(); }
+  /* машина трогается со старта, когда страница загрузилась и сцена прочертилась */
+  var driveReady = false, driveQueued = false;
+  function goDrive() {
+    if (driveQueued) return;
+    driveQueued = true;
+    setTimeout(function () { driveReady = true; loopE = 0; setupHeroMode(); }, 1700);
+  }
+  if (d.readyState === 'complete') goDrive(); else w.addEventListener('load', goDrive);
+  setTimeout(goDrive, 8000);
   setupHeroMode();
 
   /* пауза анимаций сцены вне экрана */
