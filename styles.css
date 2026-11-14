@@ -722,3 +722,6 @@ body.v-open .sticky{display:none}
 .ins figcaption{display:flex;flex-direction:column;gap:2px}
 .ins figcaption b{font-family:var(--disp);font-weight:700;font-size:clamp(22px,2vw,28px);text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 .ins figcaption span{font-weight:400;font-size:15px;color:var(--ink-2)}
+.adr-v-s{font-size:clamp(20px,1.8vw,26px)}
+.tlink{font-weight:700;white-space:nowrap;text-decoration:underline;text-underline-offset:3px}
+.tlink:hover{color:var(--y)}
