@@ -81,7 +81,7 @@
       (!name ? form.name : form.phone).focus();
       return;
     }
-    var t = 'Здравствуйте. Заявка с сайта zarulauto.kz (Талдыкорган). Имя: ' + name + '. Телефон: ' + phone +
+    var t = 'Здравствуйте. Заявка с сайта zarulauto-tdk.kz (Талдыкорган). Имя: ' + name + '. Телефон: ' + phone +
       '. Интересует: ' + form.what.value + '. Пакет: ' + form.pack.value + '.';
     w.open('https://wa.me/77773423336?text=' + encodeURIComponent(t), '_blank', 'noopener');
   });
