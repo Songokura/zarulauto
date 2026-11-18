@@ -98,7 +98,9 @@
     var t = 'Здравствуйте. Заявка с сайта zarulauto-tdk.kz (Талдыкорган). Имя: ' + name + '. Телефон: ' + phone +
       '. Интересует: ' + form.what.value + '. Пакет: ' + form.pack.value + '.';
     conv('lead');
-    w.open('https://wa.me/77773423336?text=' + encodeURIComponent(t), '_blank', 'noopener');
+    /* полный курс - офис 3336, уроки и пробный заезд - автодром 2776 */
+    var waNum = form.what.selectedIndex === 0 ? '77773423336' : '77006352776';
+    w.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(t), '_blank', 'noopener');
   });
 
   /* ---------- проявление блоков и боксов ---------- */
