@@ -2,6 +2,20 @@
 (function () {
   'use strict';
   var d = document, w = window;
+
+  /* ---------- конверсии Google Ads ---------- */
+  function conv(key) {
+    var id = (w.ZA_CONV || {})[key];
+    if (!id || typeof w.gtag !== 'function') return;
+    w.gtag('event', 'conversion', { send_to: id, value: 1.0, currency: 'USD', transport_type: 'beacon' });
+  }
+  w.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var h = a.getAttribute('href') || '';
+    if (h.indexOf('tel:') === 0) conv('phone');
+    else if (h.indexOf('wa.me') > -1 || h.indexOf('api.whatsapp.com') > -1) conv('contact');
+  }, true);
   var reduce = w.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var G = w.gsap, ST = w.ScrollTrigger;
   if (G && ST) G.registerPlugin(ST);
@@ -83,6 +97,7 @@
     }
     var t = 'Здравствуйте. Заявка с сайта zarulauto-tdk.kz (Талдыкорган). Имя: ' + name + '. Телефон: ' + phone +
       '. Интересует: ' + form.what.value + '. Пакет: ' + form.pack.value + '.';
+    conv('lead');
     w.open('https://wa.me/77773423336?text=' + encodeURIComponent(t), '_blank', 'noopener');
   });
 
